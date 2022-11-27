@@ -1,7 +1,7 @@
 #%%
 import pandas as pd
 from matplotlib.pyplot import figure, savefig, show
-from ds_charts import get_variable_types,multiple_line_chart,choose_grid,multiple_bar_chart, HEIGHT
+from ds_charts import bar_chart,get_variable_types,multiple_line_chart,choose_grid,multiple_bar_chart, HEIGHT
 from matplotlib.pyplot import subplots, savefig, show, Axes
 from seaborn import distplot
 from pandas import Series
@@ -76,7 +76,7 @@ savefig('imageD1/single_histograms_numeric.png')
 show()
 
 
-'''
+
 numeric_vars = get_variable_types(data)['Numeric']
 if [] == numeric_vars:
     raise ValueError('There are no numeric variables.')
@@ -88,10 +88,10 @@ for n in range(len(numeric_vars)):
     distplot(data[numeric_vars[n]].dropna().values, norm_hist=True, ax=axs[i, j], axlabel=numeric_vars[n])
     i, j = (i + 1, 0) if (n+1) % cols == 0 else (i, j + 1)
 savefig('imageD1/histograms_trend_numeric.png')
-show()'''
+show()
 
 
-
+'''
 def compute_known_distributions(x_values: list) -> dict:
     distributions = dict()
     # Gaussian
@@ -122,5 +122,33 @@ for n in range(len(numeric_vars)):
     i, j = (i + 1, 0) if (n+1) % cols == 0 else (i, j + 1)
     print(numeric_vars[n])
 savefig('imageD1/histogram_numeric_distribution.png')
+show()'''
+
+symbolic_vars = get_variable_types(data)['Symbolic']
+if [] == symbolic_vars:
+    raise ValueError('There are no symbolic variables.')
+
+rows, cols = choose_grid(len(symbolic_vars))
+fig, axs = subplots(rows, cols, figsize=(cols*HEIGHT, rows*HEIGHT), squeeze=False)
+i, j = 0, 0
+for n in range(len(symbolic_vars)):
+    counts = data[symbolic_vars[n]].value_counts()
+    bar_chart(counts.index.to_list(), counts.values, ax=axs[i, j], title='Histogram for %s'%symbolic_vars[n], xlabel=symbolic_vars[n], ylabel='nr records', percentage=False)
+    i, j = (i + 1, 0) if (n+1) % cols == 0 else (i, j + 1)
+savefig('imageD1/histograms_symbolic.png')
+show()
+
+class1 = ['readmitted']
+if [] == class1:
+    raise ValueError('There are no symbolic variables.')
+
+rows, cols = choose_grid(len(class1))
+fig, axs = subplots(rows, cols, figsize=(cols*HEIGHT, rows*HEIGHT), squeeze=False)
+i, j = 0, 0
+for n in range(len(class1)):
+    counts = data[class1[n]].value_counts()
+    bar_chart(counts.index.to_list(), counts.values, ax=axs[i, j], title='Histogram for %s'%class1[n], xlabel=class1[n], ylabel='nr records', percentage=False)
+    i, j = (i + 1, 0) if (n+1) % cols == 0 else (i, j + 1)
+savefig('imageD1/class_distribution_.png')
 show()
 # %%
