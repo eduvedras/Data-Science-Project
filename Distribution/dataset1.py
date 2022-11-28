@@ -6,11 +6,11 @@ from matplotlib.pyplot import subplots, savefig, show, Axes
 from seaborn import distplot
 from pandas import Series
 from scipy.stats import norm, expon, lognorm
-from numpy import log
+from numpy import log,unique
 
 filename = '../diabetic_data.csv'
 data = pd.read_csv(filename)
-
+'''
 data.boxplot(rot=45)
 savefig('imageD1/global_boxplot.png')
 show()
@@ -88,10 +88,9 @@ for n in range(len(numeric_vars)):
     distplot(data[numeric_vars[n]].dropna().values, norm_hist=True, ax=axs[i, j], axlabel=numeric_vars[n])
     i, j = (i + 1, 0) if (n+1) % cols == 0 else (i, j + 1)
 savefig('imageD1/histograms_trend_numeric.png')
-show()
+show()'''
 
 
-'''
 def compute_known_distributions(x_values: list) -> dict:
     distributions = dict()
     # Gaussian
@@ -115,15 +114,19 @@ numeric_vars = get_variable_types(data)['Numeric']
 if [] == numeric_vars:
     raise ValueError('There are no numeric variables.')
 
+rows, cols = choose_grid(len(numeric_vars))
 fig, axs = subplots(rows, cols, figsize=(cols*HEIGHT, rows*HEIGHT), squeeze=False)
 i, j = 0, 0
+
+
 for n in range(len(numeric_vars)):
     histogram_with_distributions(axs[i, j], data[numeric_vars[n]].dropna(), numeric_vars[n])
     i, j = (i + 1, 0) if (n+1) % cols == 0 else (i, j + 1)
     print(numeric_vars[n])
 savefig('imageD1/histogram_numeric_distribution.png')
-show()'''
+show()
 
+'''
 symbolic_vars = get_variable_types(data)['Symbolic']
 if [] == symbolic_vars:
     raise ValueError('There are no symbolic variables.')
@@ -150,5 +153,5 @@ for n in range(len(class1)):
     bar_chart(counts.index.to_list(), counts.values, ax=axs[i, j], title='Histogram for %s'%class1[n], xlabel=class1[n], ylabel='nr records', percentage=False)
     i, j = (i + 1, 0) if (n+1) % cols == 0 else (i, j + 1)
 savefig('imageD1/class_distribution_.png')
-show()
+show()'''
 # %%
