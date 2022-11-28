@@ -9,7 +9,7 @@ from seaborn import heatmap
 filename = '../drought.csv'
 data = pd.read_csv(filename, na_values='', parse_dates=True, infer_datetime_format=True)
 data['date'] = pd.to_datetime(data['date'],format = '%d/%m/%Y')
-
+'''
 all_vars = list(data.columns)
 if [] == all_vars:
     raise ValueError('There are no all variables.')
@@ -25,7 +25,7 @@ for i in range(len(all_vars)):
         axs[i, j-1].set_ylabel(var2)
         axs[i, j-1].scatter(data[var1], data[var2])
 savefig(f'imageD2/sparsity_study_all_vars.png')
-show()
+show()'''
 
 
 fig = figure(figsize=[12, 12])

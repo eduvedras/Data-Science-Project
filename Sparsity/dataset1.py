@@ -5,6 +5,9 @@ from ds_charts import bar_chart, get_variable_types
 from ds_charts import get_variable_types, HEIGHT
 from matplotlib.pyplot import subplots, savefig, show
 from seaborn import heatmap
+from sklearn.preprocessing import OneHotEncoder
+from numpy import number
+from pandas import DataFrame, concat
 
 filename = '../diabetic_data.csv'
 data = pd.read_csv(filename)
@@ -59,7 +62,7 @@ for i in range(len(binary_vars)):
         axs[i, j-1].scatter(data[var1], data[var2])
 savefig(f'imageD1/sparsity_study_binary.png')
 show()'''
-
+'''
 all_vars = list(data.columns)
 if [] == all_vars:
     raise ValueError('There are no all variables.')
@@ -75,11 +78,58 @@ for i in range(len(all_vars)):
         axs[i, j-1].set_ylabel(var2)
         axs[i, j-1].scatter(data[var1], data[var2])
 savefig(f'imageD1/sparsity_study_all_vars.png')
-show()
+show()'''
+
+def dummify(df, vars_to_dummify):
+    other_vars = [c for c in df.columns if not c in vars_to_dummify]
+    encoder = OneHotEncoder(handle_unknown='ignore', sparse=False, dtype=bool)
+    X = df[vars_to_dummify]
+    encoder.fit(X)
+    new_vars = encoder.get_feature_names(vars_to_dummify)
+    trans_X = encoder.transform(X)
+    dummy = DataFrame(trans_X, columns=new_vars, index=X.index)
+    dummy = dummy.convert_dtypes(convert_boolean=True)
+
+    final_df = concat([df[other_vars], dummy], axis=1)
+    return final_df
+
+'''
+filename = '../diabetic_data.csv'
+data = pd.read_csv(filename, na_values='?')
+data.dropna(inplace=True)
+
+variables = get_variable_types(data)
+symbolic_vars = variables['Symbolic']
+symbolic_vars.remove('readmitted')
+print(symbolic_vars)
+data.readmitted = data.readmitted.replace('NO','0')
+data.readmitted = data.readmitted.replace('<30','1')
+data.readmitted = data.readmitted.replace('>30','2')
+#print(data.to_string())
+
+df = dummify(data, symbolic_vars)
+
+filename = 'data/diabetic_dummified1.csv'
+df = pd.read_csv(filename)
+
+df = df.replace('No','0')
+df = df.replace('Yes','1')
+df = df.replace('Male','0')
+df = df.replace('Female','1')
+df = df.replace('Steady','1')
+df = df.replace('Ch','1')
+df = df.replace(False,'0')
+df = df.replace(True,'1')
+df.to_csv(f'data/diabetic_data_dummified.csv', index=False)'''
 
 
-fig = figure(figsize=[12, 12])
-corr_mtx = abs(data.corr())
+
+
+filename = 'data/diabetic_data_dummified.csv'
+data = pd.read_csv(filename)
+fig = figure(figsize=[60, 60])
+corr_mtx = abs(data.corr(numeric_only=False))
+print(corr_mtx)
 
 heatmap(abs(corr_mtx), xticklabels=corr_mtx.columns, yticklabels=corr_mtx.columns, annot=True, cmap='Blues')
 title('Correlation analysis')
