@@ -31,7 +31,7 @@ show()'''
 fig = figure(figsize=[12, 12])
 corr_mtx = abs(data.corr())
 
-heatmap(abs(corr_mtx), xticklabels=corr_mtx.columns, yticklabels=corr_mtx.columns, annot=True, cmap='Blues')
+heatmap(abs(corr_mtx), xticklabels=corr_mtx.columns, yticklabels=corr_mtx.columns, annot=True, cmap='Blues',annot_kws={"size": 4},fmt=".2f")
 title('Correlation analysis')
 savefig(f'imageD2/correlation_analysis.png')
 show()
