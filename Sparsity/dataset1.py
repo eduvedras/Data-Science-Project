@@ -62,7 +62,7 @@ for i in range(len(binary_vars)):
         axs[i, j-1].scatter(data[var1], data[var2])
 savefig(f'imageD1/sparsity_study_binary.png')
 show()'''
-'''
+
 all_vars = list(data.columns)
 if [] == all_vars:
     raise ValueError('There are no all variables.')
@@ -77,9 +77,10 @@ for i in range(len(all_vars)):
         axs[i, j-1].set_xlabel(var1)
         axs[i, j-1].set_ylabel(var2)
         axs[i, j-1].scatter(data[var1], data[var2])
-savefig(f'imageD1/sparsity_study_all_vars.png')
-show()'''
+savefig(f'imageD1/sparsity_study_all_vars.png',dpi=50)
+show()
 
+'''
 def dummify(df, vars_to_dummify):
     other_vars = [c for c in df.columns if not c in vars_to_dummify]
     encoder = OneHotEncoder(handle_unknown='ignore', sparse=False, dtype=bool)
@@ -93,7 +94,7 @@ def dummify(df, vars_to_dummify):
     final_df = concat([df[other_vars], dummy], axis=1)
     return final_df
 
-'''
+
 filename = '../diabetic_data.csv'
 data = pd.read_csv(filename, na_values='?')
 data.dropna(inplace=True)
@@ -120,7 +121,7 @@ df = df.replace('Steady','1')
 df = df.replace('Ch','1')
 df = df.replace(False,'0')
 df = df.replace(True,'1')
-df.to_csv(f'data/diabetic_data_dummified.csv', index=False)'''
+df.to_csv(f'data/diabetic_data_dummified.csv', index=False)
 
 
 
@@ -134,5 +135,5 @@ print(corr_mtx)
 heatmap(abs(corr_mtx), xticklabels=corr_mtx.columns, yticklabels=corr_mtx.columns, annot=True, cmap='Blues',annot_kws={"size": 1},fmt=".2f")
 title('Correlation analysis')
 savefig(f'imageD1/correlation_analysis.png')
-show()
+show()'''
 # %%
