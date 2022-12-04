@@ -112,23 +112,43 @@ def multiple_bar_chart(xvalues: list, yvalues: dict, ax: Axes = None, title: str
     ax.legend(legend, fontsize='xx-small', title_fontsize='xx-small')
 
 
-def plot_evaluation_results(labels: ndarray, trn_y, prd_trn, tst_y, prd_tst):
-    print(labels)
+def plot_evaluation_results_tern(labels: ndarray, trn_y, prd_trn, tst_y, prd_tst):
+    #print(labels)
     cnf_mtx_trn = confusion_matrix(trn_y, prd_trn, labels=labels)
-    print(cnf_mtx_trn)
     tu30_u30_trn, fa30_u30_trn, fno_u30_trn, fu30_a30_trn, ta30_a30_trn, fno_a30_trn,fu30_no_trn,fa30_no_trn,tno_no_trn = cnf_mtx_trn.ravel()
     cnf_mtx_tst = confusion_matrix(tst_y, prd_tst, labels=labels)
+    #print(cnf_mtx_trn)
     tu30_u30_tst, fa30_u30_tst, fno_u30_tst, fu30_a30_tst, ta30_a30_tst, fno_a30_tst,fu30_no_tst,fa30_no_tst,tno_no_tst = cnf_mtx_tst.ravel()
+    
+    #print(tu30_u30_trn, ' + ', ta30_a30_trn,'/ ( ',tu30_u30_trn, ' + ', ta30_a30_trn, ' + ', fno_u30_trn, ' + ', fno_a30_trn,')')
 
-    '''evaluation = {
+    evaluation = {
         'Accuracy': [(tu30_u30_trn + ta30_a30_trn + tno_no_trn) / (tu30_u30_trn + fa30_u30_trn + fno_u30_trn + fu30_a30_trn + ta30_a30_trn + fno_a30_trn + fu30_no_trn + fa30_no_trn + tno_no_trn), (tu30_u30_tst + ta30_a30_tst + tno_no_tst) / (tu30_u30_tst + fa30_u30_tst + fno_u30_tst + fu30_a30_tst + ta30_a30_tst + fno_a30_tst + fu30_no_tst + fa30_no_tst + tno_no_tst)],
+        'Recall': [(tu30_u30_trn + ta30_a30_trn) / (tu30_u30_trn + ta30_a30_trn + fno_u30_trn + fno_a30_trn), (tu30_u30_tst + ta30_a30_tst) / (tu30_u30_tst + ta30_a30_tst + fno_u30_tst + fno_a30_tst)],
+        'Specificity': [tno_no_trn / (tno_no_trn + fa30_u30_trn + fu30_a30_trn + fu30_no_trn + fa30_no_trn), tno_no_tst / (tno_no_tst + fa30_u30_tst + fu30_a30_tst + fu30_no_tst + fa30_no_tst)],
+        'Precision': [(tu30_u30_trn + ta30_a30_trn) / (tu30_u30_trn + ta30_a30_trn + fa30_u30_trn + fu30_a30_trn + fu30_no_trn + fa30_no_trn), (tu30_u30_tst + ta30_a30_tst) / (tu30_u30_tst + ta30_a30_tst + fa30_u30_tst + fu30_a30_tst + fu30_no_tst + fa30_no_tst)]}
+
+    #print(evaluation)
+    _, axs = subplots(1, 2, figsize=(2 * HEIGHT, HEIGHT))
+    multiple_bar_chart(['Train', 'Test'], evaluation, ax=axs[0], title="Model's performance over Train and Test sets", percentage=True)
+    plot_confusion_matrix(cnf_mtx_tst, labels, ax=axs[1], title='Test')
+    
+def plot_evaluation_results(labels: ndarray, trn_y, prd_trn, tst_y, prd_tst):
+    cnf_mtx_trn = confusion_matrix(trn_y, prd_trn, labels=labels)
+    tn_trn, fp_trn, fn_trn, tp_trn = cnf_mtx_trn.ravel()
+    cnf_mtx_tst = confusion_matrix(tst_y, prd_tst, labels=labels)
+    tn_tst, fp_tst, fn_tst, tp_tst = cnf_mtx_tst.ravel()
+
+    evaluation = {
+        'Accuracy': [(tn_trn + tp_trn) / (tn_trn + tp_trn + fp_trn + fn_trn), (tn_tst + tp_tst) / (tn_tst + tp_tst + fp_tst + fn_tst)],
         'Recall': [tp_trn / (tp_trn + fn_trn), tp_tst / (tp_tst + fn_tst)],
         'Specificity': [tn_trn / (tn_trn + fp_trn), tn_tst / (tn_tst + fp_tst)],
-        'Precision': [tp_trn / (tp_trn + fp_trn), tp_tst / (tp_tst + fp_tst)]}'''
+        'Precision': [tp_trn / (tp_trn + fp_trn), tp_tst / (tp_tst + fp_tst)]}
 
     _, axs = subplots(1, 2, figsize=(2 * HEIGHT, HEIGHT))
-    #multiple_bar_chart(['Train', 'Test'], evaluation, ax=axs[0], title="Model's performance over Train and Test sets", percentage=True)
+    multiple_bar_chart(['Train', 'Test'], evaluation, ax=axs[0], title="Model's performance over Train and Test sets", percentage=True)
     plot_confusion_matrix(cnf_mtx_tst, labels, ax=axs[1], title='Test')
+
 
 
 def horizontal_bar_chart(elements: list, values: list, error: list, ax: Axes = None, title: str = '', xlabel: str = '', ylabel: str = ''):
