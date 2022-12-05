@@ -90,7 +90,7 @@ for n in range(len(numeric_vars)):
 savefig('imageD1/histograms_trend_numeric.png')
 show()'''
 
-
+'''
 def compute_known_distributions(x_values: list) -> dict:
     distributions = dict()
     # Gaussian
@@ -124,10 +124,10 @@ for n in range(len(numeric_vars)):
     i, j = (i + 1, 0) if (n+1) % cols == 0 else (i, j + 1)
     print(numeric_vars[n])
 savefig('imageD1/histogram_numeric_distribution.png')
-show()
+show()'''
 
-'''
-symbolic_vars = get_variable_types(data)['Symbolic']
+
+symbolic_vars = get_variable_types(data)['Symbolic'] + get_variable_types(data)['Binary']
 if [] == symbolic_vars:
     raise ValueError('There are no symbolic variables.')
 
@@ -144,7 +144,7 @@ show()
 class1 = ['readmitted']
 if [] == class1:
     raise ValueError('There are no symbolic variables.')
-
+'''
 rows, cols = choose_grid(len(class1))
 fig, axs = subplots(rows, cols, figsize=(cols*HEIGHT, rows*HEIGHT), squeeze=False)
 i, j = 0, 0

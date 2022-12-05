@@ -12,7 +12,7 @@ filename = '../drought.csv'
 data = pd.read_csv(filename, na_values='', parse_dates=True, infer_datetime_format=True)
 data['date'] = pd.to_datetime(data['date'],format = '%d/%m/%Y')
 
-
+'''
 data.boxplot(rot=45)
 savefig('imageD2/global_boxplot.png')
 show()
@@ -104,5 +104,23 @@ for n in range(len(binary_vars)):
     bar_chart(counts.index.to_list(), counts.values, ax=axs[i, j], title='Histogram for %s'%binary_vars[n], xlabel=binary_vars[n], ylabel='nr records', percentage=False)
     i, j = (i + 1, 0) if (n+1) % cols == 0 else (i, j + 1)
 savefig('imageD2/class_distribution_.png')
+show()'''
+
+symbolic_vars = get_variable_types(data)['Symbolic'] + get_variable_types(data)['Binary']
+if [] == symbolic_vars:
+    raise ValueError('There are no symbolic variables.')
+
+rows, cols = choose_grid(len(symbolic_vars))
+fig, axs = subplots(rows, cols, figsize=(cols*HEIGHT, rows*HEIGHT), squeeze=False)
+i, j = 0, 0
+for n in range(len(symbolic_vars)):
+    counts = data[symbolic_vars[n]].value_counts()
+    bar_chart(counts.index.to_list(), counts.values, ax=axs[i, j], title='Histogram for %s'%symbolic_vars[n], xlabel=symbolic_vars[n], ylabel='nr records', percentage=False)
+    i, j = (i + 1, 0) if (n+1) % cols == 0 else (i, j + 1)
+savefig('imageD2/histograms_symbolic.png')
 show()
+
+class1 = ['readmitted']
+if [] == class1:
+    raise ValueError('There are no symbolic variables.')
 # %%

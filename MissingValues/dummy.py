@@ -75,6 +75,7 @@ data['metformin-rosiglitazone'] = data['metformin-rosiglitazone'].replace(['No',
 data['metformin-pioglitazone'] = data['metformin-pioglitazone'].replace(['No','Down','Steady','Up'],['0','1','2','3'])
 data['change'] = data['change'].replace(['No','Ch'],['0','1'])
 data['diabetesMed'] = data['diabetesMed'].replace(['No','Yes'],['0','1'])
+#data['readmitted'] = data['readmitted'].replace(['<30','>30','NO'],['1','2','0'])
 #data.apply(aux)
 #print(data.to_string())
 

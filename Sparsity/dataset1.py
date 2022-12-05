@@ -62,7 +62,7 @@ for i in range(len(binary_vars)):
         axs[i, j-1].scatter(data[var1], data[var2])
 savefig(f'imageD1/sparsity_study_binary.png')
 show()'''
-
+'''
 all_vars = list(data.columns)
 if [] == all_vars:
     raise ValueError('There are no all variables.')
@@ -78,7 +78,7 @@ for i in range(len(all_vars)):
         axs[i, j-1].set_ylabel(var2)
         axs[i, j-1].scatter(data[var1], data[var2])
 savefig(f'imageD1/sparsity_study_all_vars.png',dpi=50)
-show()
+show()'''
 
 '''
 def dummify(df, vars_to_dummify):
@@ -122,18 +122,18 @@ df = df.replace('Ch','1')
 df = df.replace(False,'0')
 df = df.replace(True,'1')
 df.to_csv(f'data/diabetic_data_dummified.csv', index=False)
+'''
 
 
 
-
-filename = 'data/diabetic_data_dummified.csv'
+filename = '../MissingValues/data/frequent_dummified.csv'
 data = pd.read_csv(filename)
 fig = figure(figsize=[60, 60])
 corr_mtx = abs(data.corr(numeric_only=False))
 print(corr_mtx)
 
-heatmap(abs(corr_mtx), xticklabels=corr_mtx.columns, yticklabels=corr_mtx.columns, annot=True, cmap='Blues',annot_kws={"size": 1},fmt=".2f")
+heatmap(abs(corr_mtx), xticklabels=corr_mtx.columns, yticklabels=corr_mtx.columns, annot=True, cmap='Blues',annot_kws={"size": 10},fmt=".2f")
 title('Correlation analysis')
 savefig(f'imageD1/correlation_analysis.png')
-show()'''
+show()
 # %%
