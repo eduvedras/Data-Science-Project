@@ -1,11 +1,12 @@
+#%%
 import numpy as np
 from pandas import read_csv, concat, unique, DataFrame
 import matplotlib.pyplot as plt
 import ds_charts as ds
 from sklearn.model_selection import train_test_split
 
-file_tag = 'diabetic_zscore'
-data: DataFrame = read_csv('data/diabetic_scaled_zscore.csv')
+file_tag = 'diabetic_sel'
+data: DataFrame = read_csv('dataWeek3/diabetic_sel.csv')
 #data = data.head(100)
 
 target = 'readmitted'
@@ -22,9 +23,10 @@ labels.sort()
 trnX, tstX, trnY, tstY = train_test_split(X, y, train_size=0.7, stratify=y)
 
 train = concat([DataFrame(trnX, columns=data.columns), DataFrame(trnY,columns=[target])], axis=1)
-train.to_csv(f'data/{file_tag}_train.csv', index=False)
+train.to_csv(f'dataWeek3/{file_tag}_train.csv', index=False)
 
 test = concat([DataFrame(tstX, columns=data.columns), DataFrame(tstY,columns=[target])], axis=1)
-test.to_csv(f'data/{file_tag}_test.csv', index=False)
+test.to_csv(f'dataWeek3/{file_tag}_test.csv', index=False)
 values['Train'] = [len(np.delete(trnY, np.argwhere(trnY==above30))), len(np.delete(trnY, np.argwhere(trnY==under30))), len(np.delete(trnY, np.argwhere(trnY==no)))]
 values['Test'] = [len(np.delete(tstY, np.argwhere(tstY==above30))), len(np.delete(tstY, np.argwhere(tstY==under30))), len(np.delete(trnY, np.argwhere(trnY==no)))]
+# %%

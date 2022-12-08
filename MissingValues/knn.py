@@ -6,8 +6,8 @@ from sklearn.neighbors import KNeighborsClassifier
 from ds_charts import plot_evaluation_results,plot_evaluation_results_tern, multiple_line_chart, plot_overfitting_study
 from sklearn.metrics import accuracy_score
 
-file_tag = 'diabetic_zscore'
-filename = 'data/diabetic_zscore'
+file_tag = 'diabetic_sel'
+filename = 'dataWeek3/diabetic_sel'
 target = 'readmitted'
 
 train: DataFrame = read_csv(f'{filename}_train.csv')
@@ -21,7 +21,7 @@ tstY: ndarray = test.pop(target).values
 tstX: ndarray = test.values
 
 eval_metric = accuracy_score
-nvalues = [1, 3, 5, 7, 9, 11, 13, 15, 17, 19]
+nvalues = [1, 3, 5, 7, 9, 11, 13, 15, 17, 19, 21, 23, 25, 27]
 dist = ['manhattan', 'euclidean', 'chebyshev']
 values = {}
 best = (0, '')
@@ -40,7 +40,7 @@ for d in dist:
 
 figure()
 multiple_line_chart(nvalues, values, title='KNN variants', xlabel='n', ylabel=str(accuracy_score), percentage=True)
-savefig(f'images/{file_tag}_knn_study.png')
+savefig(f'imagesWeek3/{file_tag}_knn_study.png')
 show()
 print('Best results with %d neighbors and %s'%(best[0], best[1]))
 
@@ -50,14 +50,14 @@ prd_trn = clf.predict(trnX)
 prd_tst = clf.predict(tstX)
 plot_evaluation_results_tern(labels, trnY, prd_trn, tstY, prd_tst)
 #plot_evaluation_results(labels, trnY, prd_trn, tstY, prd_tst)
-savefig(f'images/{file_tag}_knn_best.png')
+savefig(f'imagesWeek3/{file_tag}_knn_best.png')
 show()
 
 def plot_overfitting_study(xvalues, prd_trn, prd_tst, name, xlabel, ylabel):
     evals = {'Train': prd_trn, 'Test': prd_tst}
     figure()
     multiple_line_chart(xvalues, evals, ax = None, title=f'Overfitting {name}', xlabel=xlabel, ylabel=ylabel, percentage=True)
-    savefig(f'images/diabetic_zscore_overfitting_{name}.png')
+    savefig(f'imagesWeek3/diabetic_sel_overfitting_{name}.png')
 
 d = best[1]
 eval_metric = accuracy_score

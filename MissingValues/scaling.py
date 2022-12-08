@@ -7,7 +7,7 @@ from matplotlib.pyplot import subplots, show, savefig
 
 register_matplotlib_converters()
 file = 'diabetic'
-filename = 'data/frequent_dummified.csv'
+filename = 'dataWeek3/diabetic_data_drop_outliers.csv'
 data = read_csv(filename)
 
 variable_types = get_variable_types(data)
@@ -23,14 +23,14 @@ df_bool = data[boolean_vars]
 transf = StandardScaler(with_mean=True, with_std=True, copy=True).fit(df_nr)
 tmp = DataFrame(transf.transform(df_nr), index=data.index, columns= numeric_vars)
 norm_data_zscore = concat([tmp, df_sb,  df_bool], axis=1)
-norm_data_zscore.to_csv(f'data/{file}_scaled_zscore.csv', index=False)
+norm_data_zscore.to_csv(f'dataWeek3/{file}_scaled_zscore.csv', index=False)
 
 
 #minmax
 transf = MinMaxScaler(feature_range=(0, 1), copy=True).fit(df_nr)
 tmp = DataFrame(transf.transform(df_nr), index=data.index, columns= numeric_vars)
 norm_data_minmax = concat([tmp, df_sb,  df_bool], axis=1)
-norm_data_minmax.to_csv(f'data/{file}_scaled_minmax.csv', index=False)
+norm_data_minmax.to_csv(f'dataWeek3/{file}_scaled_minmax.csv', index=False)
 print(norm_data_minmax.describe())
 
 
@@ -42,6 +42,6 @@ axs[0, 1].set_title('Z-score normalization')
 norm_data_zscore.boxplot(ax=axs[0, 1])
 axs[0, 2].set_title('MinMax normalization')
 norm_data_minmax.boxplot(ax=axs[0, 2])
-savefig(f'images/{file}_scaling.png')
+savefig(f'imagesWeek3/{file}_scaling.png')
 show()
 # %%
