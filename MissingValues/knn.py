@@ -26,7 +26,7 @@ dist = ['manhattan', 'euclidean', 'chebyshev']
 values = {}
 best = (0, '')
 last_best = 0
-for d in dist:
+'''for d in dist:
     y_tst_values = []
     for n in nvalues:
         knn = KNeighborsClassifier(n_neighbors=n, metric=d)
@@ -43,16 +43,17 @@ multiple_line_chart(nvalues, values, title='KNN variants', xlabel='n', ylabel=st
 savefig(f'imagesWeek3/{file_tag}_knn_study.png')
 show()
 print('Best results with %d neighbors and %s'%(best[0], best[1]))
-
-clf = knn = KNeighborsClassifier(n_neighbors=best[0], metric=best[1])
+'''
+#clf = knn = KNeighborsClassifier(n_neighbors=best[0], metric=best[1])
+clf = knn = KNeighborsClassifier(n_neighbors=27, metric='manhattan')
 clf.fit(trnX, trnY)
 prd_trn = clf.predict(trnX)
 prd_tst = clf.predict(tstX)
 plot_evaluation_results_tern(labels, trnY, prd_trn, tstY, prd_tst)
 #plot_evaluation_results(labels, trnY, prd_trn, tstY, prd_tst)
-savefig(f'imagesWeek3/{file_tag}_knn_best.png')
+savefig(f'imagesWeek3/{file_tag}_knn_best27.png')
 show()
-
+'''
 def plot_overfitting_study(xvalues, prd_trn, prd_tst, name, xlabel, ylabel):
     evals = {'Train': prd_trn, 'Test': prd_tst}
     figure()
@@ -70,5 +71,5 @@ for n in nvalues:
     prd_trn_Y = knn.predict(trnX)
     y_tst_values.append(eval_metric(tstY, prd_tst_Y))
     y_trn_values.append(eval_metric(trnY, prd_trn_Y))
-plot_overfitting_study(nvalues, y_trn_values, y_tst_values, name=f'KNN_K={n}_{d}_bestk={best[0]}', xlabel='K', ylabel=str(eval_metric))
+plot_overfitting_study(nvalues, y_trn_values, y_tst_values, name=f'KNN_K={n}_{d}_bestk={best[0]}', xlabel='K', ylabel=str(eval_metric))'''
 # %%
