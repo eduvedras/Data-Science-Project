@@ -4,10 +4,10 @@ from matplotlib.pyplot import figure, savefig, show
 from ds_charts import bar_chart, multiple_bar_chart
 from imblearn.over_sampling import SMOTE
 
-file = "diabetic"
-filename = 'dataWeek3/diabetic_scaled_zscore.csv'
+file = "drought_wdate"
+filename = 'dataWeek3/drought_wdate_scaled_zscore.csv'
 original = read_csv(filename, sep=',', decimal='.')
-class_var = 'readmitted'
+class_var = 'class'
 target_count = original[class_var].value_counts()
 positive_class = target_count.idxmin()
 negative_class = target_count.idxmax()
@@ -33,7 +33,7 @@ values['UnderSample'] = [len(df_positives), len(df_neg_sample)]
 print('Minority class=', positive_class, ':', len(df_positives))
 print('Majority class=', negative_class, ':', len(df_neg_sample))
 print('Proportion:', round(len(df_positives) / len(df_neg_sample), 2), ': 1')
-'''
+
 df_pos_sample = DataFrame(df_positives.sample(len(df_negatives), replace=True))
 df_over = concat([df_pos_sample, df_negatives], axis=0)
 df_over.to_csv(f'dataWeek3/{file}_over.csv', index=False)
@@ -60,5 +60,5 @@ print('Proportion:', round(smote_target_count[positive_class] / smote_target_cou
 
 figure()
 multiple_bar_chart([positive_class, negative_class], values, title='Target', xlabel='frequency', ylabel='Class balance')
-show()'''
+show()
 # %%

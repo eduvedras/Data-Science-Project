@@ -22,8 +22,8 @@ data = data.fillna('Missing')
 data.to_csv(f'data/{file}_mv_constant.csv', index=True)
 
 #2st approach
-data = data.drop(['weight'],axis=1)
-data = data.drop(['payer_code'],axis=1)
+# data = data.drop(['weight'],axis=1)
+# data = data.drop(['payer_code'],axis=1)
 
 tmp_nr, tmp_sb, tmp_bool = None, None, None
 variables = get_variable_types(data)

@@ -6,7 +6,7 @@ from seaborn import heatmap
 from ds_charts import bar_chart, get_variable_types
 
 
-filename = 'balancing/drought_over.csv'
+filename = 'dataWeek3/drought_wdate_over.csv'
 data = read_csv(filename)
 THRESHOLD = 0.9
 
@@ -51,4 +51,4 @@ def drop_redundant(data: DataFrame, vars_2drop: dict) -> DataFrame:
     return df
 df = drop_redundant(data, drop)
 df = df.drop(['Unnamed: 0'], axis=1)
-df.to_csv(f'balancing/drought_featureselec.csv', index=False)
+df.to_csv(f'dataWeek3/drought_featureselec.csv', index=False)

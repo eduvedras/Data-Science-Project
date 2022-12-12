@@ -24,7 +24,7 @@ def determine_outlier_thresholds(summary5: DataFrame, var: str):
         bottom_threshold = summary5[var]['mean'] - std
     return top_threshold, bottom_threshold
 
-#numeric_vars = get_variable_types(data)['Numeric']
+# numeric_vars = get_variable_types(data)['Numeric']
 numeric_vars = ['time_in_hospital','num_lab_procedures','num_procedures','num_medications','number_outpatient', 'number_emergency', 'number_inpatient', 'number_diagnoses']
 #print(numeric_vars)
 if [] == numeric_vars:

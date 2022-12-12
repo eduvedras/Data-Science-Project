@@ -5,8 +5,8 @@ import matplotlib.pyplot as plt
 import ds_charts as ds
 from sklearn.model_selection import train_test_split
 
-file_tag = 'drought_scaled_minmax'
-data: DataFrame = read_csv('data/drought_scaled_minmax.csv')
+file_tag = 'drought_featureselec'
+data: DataFrame = read_csv('dataWeek3/drought_featureselec.csv')
 target = 'class'
 positive = '1'
 negative = '0'

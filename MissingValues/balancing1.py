@@ -26,7 +26,7 @@ bar_chart(target_count.index, target_count.values, title='Class balance')
 savefig(f'imagesWeek3/{file}_balance.png')
 show()
 
-'''df_u30 = original[original[class_var] == u30_class]
+df_u30 = original[original[class_var] == u30_class]
 df_a30 = original[original[class_var] == a30_class]
 df_negatives = original[original[class_var] == negative_class]
 
@@ -49,7 +49,7 @@ values['OverSample'] = [len(df_u30_sample), len(df_a30_sample), len(df_negatives
 print('Minority class=', u30_class, ':', len(df_u30_sample))
 print('Middle class=', a30_class, ':', len(df_a30_sample))
 print('Majority class=', negative_class, ':', len(df_negatives))
-print('Proportion:', round(len(df_u30_sample) / len(df_negatives), 2), ': 1')'''
+print('Proportion:', round(len(df_u30_sample) / len(df_negatives), 2), ': 1')
 
 RANDOM_STATE = 42
 
