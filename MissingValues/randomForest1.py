@@ -30,7 +30,7 @@ last_best = 0
 best_model = None
 
 cols = len(max_depths)
-'''figure()
+figure()
 fig, axs = subplots(1, cols, figsize=(cols*HEIGHT, HEIGHT), squeeze=False)
 for k in range(len(max_depths)):
     d = max_depths[k]
@@ -52,15 +52,15 @@ for k in range(len(max_depths)):
                            xlabel='nr estimators', ylabel='accuracy', percentage=True)
 savefig(f'imagesWeek4/{file_tag}_rf_study.png')
 show()
-print('Best results with depth=%d, %1.2f features and %d estimators, with accuracy=%1.2f'%(best[0], best[1], best[2], last_best))'''
-
+print('Best results with depth=%d, %1.2f features and %d estimators, with accuracy=%1.2f'%(best[0], best[1], best[2], last_best))
+'''
 #best_model = RandomForestClassifier(n_estimators=400, max_depth=5, max_features=0.5)
 best_model.fit(trnX, trnY)
 prd_trn = best_model.predict(trnX)
 prd_tst = best_model.predict(tstX)
 plot_evaluation_results_tern(labels, trnY, prd_trn, tstY, prd_tst)
 savefig(f'imagesWeek4/{file_tag}_rf_est=400_md=5_mf=0.5.png')
-show()
+show()'''
 
 
 '''

@@ -31,7 +31,7 @@ best = ('',  0, 0.0)
 last_best = 0
 best_model = None
 
-'''fig, axs = subplots(1, 2, figsize=(16, 4), squeeze=False)
+fig, axs = subplots(1, 2, figsize=(16, 4), squeeze=False)
 for k in range(len(criteria)):
     f = criteria[k]
     values = {}
@@ -54,27 +54,26 @@ savefig(f'imagesWeek4/{file_tag}_dt_study.png')
 show()
 print('Best results achieved with %s criteria, depth=%d and min_impurity_decrease=%1.2f ==> accuracy=%1.2f'%(best[0], best[1], best[2], last_best))
 
+'''
+file_tree = 'imagesWeek4/drought_best_tree.png'
 
-
-file_tree = 'imagesWeek4/best_tree.png'
-
-dot_data = export_graphviz(best_model, out_file='imagesWeek4/best_tree.dot', filled=True, rounded=True, special_characters=True)
+#dot_data = export_graphviz(best_model, out_file='imagesWeek4/best_tree.dot', filled=True, rounded=True, special_characters=True)
 # Convert to png
 
-call(['dot', '-Tpng', 'imagesWeek4/best_tree.dot', '-o', file_tree, '-Gdpi=600'])
+call(['dot', '-Tpng', 'imagesWeek4/drought_best_tree.dot', '-o', file_tree, '-Gdpi=28'])
 
 figure(figsize = (14, 18))
 imshow(imread(file_tree))
 axis('off')
 show()'''
-
+'''
 best_model = DecisionTreeClassifier(max_depth=10, criterion='entropy', min_impurity_decrease=0.00)
 best_model.fit(trnX, trnY)
 prd_trn = best_model.predict(trnX)
 prd_tst = best_model.predict(tstX)
 plot_evaluation_results_tern(labels, trnY, prd_trn, tstY, prd_tst)
 savefig(f'imagesWeek4/{file_tag}_dt_md=10_c=entr_mi=0.png')
-show()
+show()'''
 
 
 
