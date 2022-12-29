@@ -1,4 +1,4 @@
-from matplotlib.pyplot import subplots, Axes, gca
+from matplotlib.pyplot import subplots, Axes, gca, savefig
 import matplotlib.dates as mdates
 import config as cfg
 from pandas import concat, Series
@@ -86,6 +86,7 @@ def plot_evaluation_results(trn_y, prd_trn, tst_y, prd_tst, figname):
     _, axs = subplots(1, 2)
     multiple_bar_chart(['Train', 'Test'], eval1, ax=axs[0], title="Predictor's performance", percentage=False)
     multiple_bar_chart(['Train', 'Test'], eval2, ax=axs[1], title="Predictor's performance", percentage=False)
+    savefig(figname)
 
 def plot_forecasting_series(trn, tst, prd_trn, prd_tst, figname: str, x_label: str = 'time', y_label:str =''):
     _, ax = subplots(1,1,figsize=(5*HEIGHT, HEIGHT), squeeze=True)
@@ -97,6 +98,7 @@ def plot_forecasting_series(trn, tst, prd_trn, prd_tst, figname: str, x_label: s
     ax.plot(tst.index, tst, label='test', color='g')
     ax.plot(tst.index, prd_tst, '--r', label='test prediction')
     ax.legend(prop={'size': 5})
+    savefig(figname)
 
 def plot_series(series, ax: Axes = None, title: str = '', x_label: str = '', y_label: str = '',
                 percentage=False, show_std=False):
