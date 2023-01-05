@@ -24,13 +24,12 @@ data_multi = read_csv('../glucose.csv', index_col=index_multi, parse_dates=True,
 
 figure(figsize=(3*HEIGHT, HEIGHT))
 agg_multi_df = aggregate_by(data_multi, index_multi, 'Q')
-plot_series(agg_multi_df[target_multi], title='Hourly', x_label='timestamp', y_label='glucose level')
-plot_series(agg_multi_df['Insulin'])
+plot_series(agg_multi_df[target_multi], title='Quaterly', x_label='timestamp', y_label='glucose level')
 xticks(rotation = 45)
 show()
 savefig(f'imagesD1Transformation/{file_tag}.png')
 
-df = agg_multi_df.drop('Insulin', axis=1)
+df = agg_multi_df
 
 def split_dataframe(data, trn_pct=0.70):
     trn_size = int(len(data) * trn_pct)

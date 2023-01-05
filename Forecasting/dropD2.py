@@ -1,4 +1,3 @@
-#%%
 from pandas import read_csv
 from pandas.plotting import register_matplotlib_converters
 from matplotlib.pyplot import figure, savefig, show
@@ -9,11 +8,14 @@ from numpy import nan
 
 
 register_matplotlib_converters()
-file = 'glucose1'
-filename = '../glucose.csv'
+file = 'droughtDrop'
+filename = '../drought.forecasting_dataset.csv'
 data = read_csv(filename, na_values='')
 
-data = data.fillna(method='ffill')
+data = data.drop('PS', axis=1)
+data = data.drop('T2M', axis=1)
+data = data.drop('T2MDEW', axis=1)
+data = data.drop('T2MWET', axis=1)
+data = data.drop('TS', axis=1)
+data = data.drop('PRECTOT', axis=1)
 data.to_csv(f'../{file}.csv', index=False)
-
-# %%

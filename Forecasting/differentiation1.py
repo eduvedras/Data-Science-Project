@@ -7,23 +7,22 @@ from ts_functions import HEIGHT, split_dataframe, create_temporal_dataset
 from sklearn.base import RegressorMixin
 from ts_functions import PREDICTION_MEASURES, plot_evaluation_results, plot_forecasting_series
 
-file_tag = 'glucose_diff_1'
+file_tag = 'glucose_diff_2'
 index_multi = 'Date'
 target_multi = 'Glucose'
 data_multi = read_csv('../glucose.csv', index_col=index_multi, parse_dates=True, infer_datetime_format=True)
 
 diff_df_multi = data_multi.diff()
-#diff_df_multi = diff_df_multi.diff()
+diff_df_multi = diff_df_multi.diff()
 #diff_df_multi = data_multi
 figure(figsize=(3*HEIGHT, HEIGHT))
 plot_series(diff_df_multi[target_multi], title='Glucose - Differentiation', x_label=index_multi, y_label='glucose level')
-plot_series(diff_df_multi['Insulin'])
 xticks(rotation = 45)
 show()
 savefig(f'imagesD1Transformation/{file_tag}.png')
 
-df = diff_df_multi.drop('Insulin', axis=1)
-df.drop(index=df.index[:1], axis=0, inplace=True)
+df = diff_df_multi
+df.drop(index=df.index[:2], axis=0, inplace=True)
 #df.to_csv(f'../{file_tag}.csv', index=False)
 
 

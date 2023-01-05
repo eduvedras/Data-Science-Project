@@ -13,14 +13,14 @@ month_df = data.copy().groupby(index).mean()
 month_df['timestamp'] = index.drop_duplicates().to_timestamp()
 month_df.set_index('timestamp', drop=True, inplace=True)
 
-dt_series = Series(month_df['Insulin'])
+dt_series = Series(month_df['Glucose'])
 
 mean_line = Series(ones(len(dt_series.values)) * dt_series.mean(), index=dt_series.index)
-series = {'Insulin': dt_series, 'mean': mean_line}
+series = {'Glucose': dt_series, 'mean': mean_line}
 figure(figsize=(3*HEIGHT, HEIGHT))
-plot_series(series, x_label='timestamp', y_label='Insulin level', title='Stationary study', show_std=True)
+plot_series(series, x_label='timestamp', y_label='Glucose level', title='Stationary study', show_std=True)
 show()
-savefig("imagesD1Stationarity/Insulin.png")
+savefig("imagesD1Stationarity/Glucose.png")
 
 BINS = 10
 line = []
@@ -31,9 +31,9 @@ for i in range(BINS):
     line += mean
 line += [line[-1]] * (n - len(line))
 mean_line = Series(line, index=dt_series.index)
-series = {'Insulin': dt_series, 'mean': mean_line}
+series = {'Glucose': dt_series, 'mean': mean_line}
 figure(figsize=(3*HEIGHT, HEIGHT))
-plot_series(series, x_label='time', y_label='Insulin level', title='Stationary study', show_std=True)
+plot_series(series, x_label='time', y_label='Glucose level', title='Stationary study', show_std=True)
 show()
-savefig("imagesD1Stationarity/Insulin_all.png")
+savefig("imagesD1Stationarity/Glucose_all.png")
 # %%
