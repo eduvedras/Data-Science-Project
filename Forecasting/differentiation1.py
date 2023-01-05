@@ -7,22 +7,37 @@ from ts_functions import HEIGHT, split_dataframe, create_temporal_dataset
 from sklearn.base import RegressorMixin
 from ts_functions import PREDICTION_MEASURES, plot_evaluation_results, plot_forecasting_series
 
-file_tag = 'glucose_diff_1'
+def aggregate_by(data: Series, index_var: str, period: str):
+    index = data.index.to_period(period)
+    agg_df = data.copy().groupby(index).mean()
+    agg_df[index_var] = index.drop_duplicates().to_timestamp()
+    agg_df.set_index(index_var, drop=True, inplace=True)
+    return agg_df
+
+file_tag = 'glucose_diff_Original'
 index_multi = 'Date'
 target_multi = 'Glucose'
-data_multi = read_csv('../glucose.csv', index_col=index_multi, parse_dates=True, infer_datetime_format=True)
+data_multi = read_csv('../glucose.csv', index_col='Date', sep=',', decimal='.', parse_dates=True, dayfirst=True)
+agg_multi_df = aggregate_by(data_multi, index_multi, 'D')
 
-diff_df_multi = data_multi.diff()
+WIN_SIZE = 13
+rolling_multi = agg_multi_df.rolling(window=WIN_SIZE)
+smooth_df_multi = rolling_multi.mean()
+
+df = smooth_df_multi
+df.drop(index=df.index[:WIN_SIZE], axis=0, inplace=True)
+
+#diff_df_multi = df.diff()
 #diff_df_multi = diff_df_multi.diff()
-#diff_df_multi = data_multi
+diff_df_multi = df
 figure(figsize=(3*HEIGHT, HEIGHT))
-plot_series(diff_df_multi[target_multi], title='Glucose - Differentiation 1', x_label=index_multi, y_label='glucose level')
+plot_series(diff_df_multi[target_multi], title='Glucose - Differentiation Original', x_label=index_multi, y_label='glucose level')
 xticks(rotation = 45)
 show()
 savefig(f'imagesD1Transformation/{file_tag}.png')
 
 df = diff_df_multi
-df.drop(index=df.index[:1], axis=0, inplace=True)
+#df.drop(index=df.index[:2], axis=0, inplace=True)
 #df.to_csv(f'../{file_tag}.csv', index=False)
 
 

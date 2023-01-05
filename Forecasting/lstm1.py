@@ -2,6 +2,7 @@ from torch import zeros
 from torch.nn import LSTM, Linear, Module, MSELoss
 from torch.optim import Adam
 from torch.autograd import Variable
+from pandas import read_csv, Series
 
 class DS_LSTM(Module):
     def __init__(self, input_size, hidden_size, learning_rate, num_layers=1, num_classes=1):
@@ -42,22 +43,41 @@ class DS_LSTM(Module):
         # Predict the target variable for the input data
         return self(data).detach().numpy()
     
+def aggregate_by(data: Series, index_var: str, period: str):
+    index = data.index.to_period(period)
+    agg_df = data.copy().groupby(index).mean()
+    agg_df[index_var] = index.drop_duplicates().to_timestamp()
+    agg_df.set_index(index_var, drop=True, inplace=True)
+    return agg_df
+    
 from pandas import read_csv, DataFrame
 from torch import manual_seed, Tensor
 from torch.autograd import Variable
 from ts_functions import split_dataframe, sliding_window
 from sklearn.preprocessing import MinMaxScaler
+'''
+file_tag = 'glucose_best'
+index = 'Date'
+target = 'Glucose'
+data = read_csv('../glucose.csv', index_col='Date', sep=',', decimal='.', parse_dates=True, dayfirst=True)
+agg_multi_df = aggregate_by(data, index, 'D')
+
+WIN_SIZE = 13
+rolling_multi = agg_multi_df.rolling(window=WIN_SIZE)
+smooth_df = rolling_multi.mean()
 
 
+smooth_df.drop(index=data.index[:WIN_SIZE], axis=0, inplace=True)'''
 
 target = 'Glucose'
 index_col='Date'
 
 file_tag = 'glucose'
-data = read_csv('../glucose.csv', index_col=index_col, parse_dates=True, infer_datetime_format=True)
+data = read_csv('../glucose.csv', index_col='Date', sep=',', decimal='.', parse_dates=True, dayfirst=True)
 nr_features = len(data.columns)
-WIN_SIZE = 100
-rolling_multi = data.rolling(window=WIN_SIZE)
+agg_multi_df = aggregate_by(data, index_col, 'D')
+WIN_SIZE = 13
+rolling_multi = agg_multi_df.rolling(window=WIN_SIZE)
 smooth_df = rolling_multi.mean()
 smooth_df.drop(index=smooth_df.index[:WIN_SIZE], axis=0, inplace=True)
 sc = MinMaxScaler()
@@ -107,7 +127,7 @@ sequence_size = [4, 20, 60, 100]
 nr_hidden_units = [8, 16, 32]
 max_iter = [500, 500, 1500, 2500]
 episode_values = [max_iter[0]]
-'''for el in max_iter[1:]:
+for el in max_iter[1:]:
     episode_values.append(episode_values[-1]+el)
 
 nCols = len(sequence_size)
@@ -142,7 +162,7 @@ for s in range(len(sequence_size)):
         episode_values, values, ax=axs[0, s], title=f'LSTM seq length={length}', xlabel='nr episodes', ylabel=measure, percentage=flag_pct)
 print(f'Best results with seq length={best[0]} hidden={best[1]} episodes={best[2]} ==> measure={last_best:.2f}')
 savefig(f'imagesD1LSTM/{file_tag}_lstm_study.png')
-show()'''
+show()
 
 trnX, trnY = sliding_window(train, seq_length = best[0])
 trainY = DataFrame(trnY)
@@ -166,7 +186,7 @@ prd_tst = DataFrame(prd_tst)
 prd_tst.index=test.index[best[0]+1:]
 prd_tst.columns = [target]
 
-plot_evaluation_results(trnY.data.numpy(), prd_trn, tstY.data.numpy(), prd_tst, f'imagesD1LSTM/{file_tag}_seq=100_hidden=32_ep=_lstm_eval.png')
+plot_evaluation_results(trnY.data.numpy(), prd_trn, tstY.data.numpy(), prd_tst, f'imagesD1LSTM/{file_tag}_lstm_eval.png')
 show()
-plot_forecasting_series(trainY, testY, prd_trn.values, prd_tst.values, f'imagesD1LSTM/{file_tag}_seq=100_hidden=32_ep=_lstm_plots.png', x_label=index_col, y_label=target)
+plot_forecasting_series(trainY, testY, prd_trn.values, prd_tst.values, f'imagesD1LSTM/{file_tag}_lstm_plots.png', x_label=index_col, y_label=target)
 show()

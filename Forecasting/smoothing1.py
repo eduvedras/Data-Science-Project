@@ -7,13 +7,21 @@ from ts_functions import HEIGHT, split_dataframe, create_temporal_dataset
 from sklearn.base import RegressorMixin
 from ts_functions import PREDICTION_MEASURES, plot_evaluation_results, plot_forecasting_series
 
-file_tag = 'glucose_smoothing100'
+def aggregate_by(data: Series, index_var: str, period: str):
+    index = data.index.to_period(period)
+    agg_df = data.copy().groupby(index).mean()
+    agg_df[index_var] = index.drop_duplicates().to_timestamp()
+    agg_df.set_index(index_var, drop=True, inplace=True)
+    return agg_df
+
+file_tag = 'glucose_smoothing13'
 index_multi = 'Date'
 target_multi = 'Glucose'
-data_multi = read_csv('../glucose.csv', index_col=index_multi, parse_dates=True, infer_datetime_format=True)
+data_multi = read_csv('../glucose.csv', index_col='Date', sep=',', decimal='.', parse_dates=True, dayfirst=True)
+agg_multi_df = aggregate_by(data_multi, index_multi, 'D')
 
-WIN_SIZE = 100
-rolling_multi = data_multi.rolling(window=WIN_SIZE)
+WIN_SIZE = 13
+rolling_multi = agg_multi_df.rolling(window=WIN_SIZE)
 smooth_df_multi = rolling_multi.mean()
 figure(figsize=(3*HEIGHT, HEIGHT/2))
 plot_series(smooth_df_multi[target_multi], title=f'Glucose - Smoothing (win_size={WIN_SIZE})', x_label=index_multi, y_label='glucose level')
@@ -88,7 +96,7 @@ plot_evaluation_results(train.values, prd_trn, test.values, prd_tst, f'imagesD1T
 plot_forecasting_series(train, test, prd_trn, prd_tst, f'imagesD1Transformation/{file_tag}_simpleAvg_plots.png', x_label=index_multi, y_label=target_multi)
 
 class RollingMeanRegressor (RegressorMixin):
-    def __init__(self, win: int = 20):
+    def __init__(self, win: int = 5):
         super().__init__()
         self.win_size = win
 
@@ -109,10 +117,10 @@ prd_tst = fr_mod.predict(test)
 eval_results['RollingMean'] = PREDICTION_MEASURES[measure](test.values, prd_tst)
 print(eval_results)
 
-plot_evaluation_results(train.values, prd_trn, test.values, prd_tst, f'imagesD1Transformation/{file_tag}_win=20_rollingMean_eval.png')
-plot_forecasting_series(train, test, prd_trn, prd_tst, f'imagesD1Transformation/{file_tag}_win=20_rollingMean_plots.png', x_label=index_multi, y_label=target_multi)
+plot_evaluation_results(train.values, prd_trn, test.values, prd_tst, f'imagesD1Transformation/{file_tag}_win=5_rollingMean_eval.png')
+plot_forecasting_series(train, test, prd_trn, prd_tst, f'imagesD1Transformation/{file_tag}_win=5_rollingMean_plots.png', x_label=index_multi, y_label=target_multi)
 
-
+'''
 from statsmodels.tsa.arima.model import ARIMA
 
 pred = ARIMA(train, order=(2, 0, 2))
@@ -168,5 +176,5 @@ prd_tst = best_model.forecast(steps=len(test))
 #prd_tst = md.forecast(steps=len(test))
 print(f'\t{measure}={PREDICTION_MEASURES[measure](test, prd_tst)}')
 
-plot_evaluation_results(train.values, prd_trn, test.values, prd_tst, f'imagesD1Arima/{file_tag}_p=2_d=2_q=3_arima_eval.png')
-plot_forecasting_series(train, test, prd_trn, prd_tst, f'imagesD1Arima/{file_tag}_p=2_d=2_q=3_arima_plots.png', x_label= str(index_multi), y_label=str(target_multi))
+plot_evaluation_results(train.values, prd_trn, test.values, prd_tst, f'imagesD1Arima/{file_tag}_arima_eval.png')
+plot_forecasting_series(train, test, prd_trn, prd_tst, f'imagesD1Arima/{file_tag}_arima_plots.png', x_label= str(index_multi), y_label=str(target_multi))'''
