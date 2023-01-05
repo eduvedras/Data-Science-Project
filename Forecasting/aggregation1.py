@@ -17,14 +17,14 @@ def aggregate_by(data: Series, index_var: str, period: str):
     agg_df.set_index(index_var, drop=True, inplace=True)
     return agg_df
 
-file_tag = 'glucose_agg_quarterly'
+file_tag = 'glucose_agg_daily'
 index_multi = 'Date'
 target_multi = 'Glucose'
 data_multi = read_csv('../glucose.csv', index_col=index_multi, parse_dates=True, infer_datetime_format=True)
 
 figure(figsize=(3*HEIGHT, HEIGHT))
-agg_multi_df = aggregate_by(data_multi, index_multi, 'Q')
-plot_series(agg_multi_df[target_multi], title='Quaterly', x_label='timestamp', y_label='glucose level')
+agg_multi_df = aggregate_by(data_multi, index_multi, 'D')
+plot_series(agg_multi_df[target_multi], title='Daily', x_label='timestamp', y_label='glucose level')
 xticks(rotation = 45)
 show()
 savefig(f'imagesD1Transformation/{file_tag}.png')
