@@ -16,20 +16,21 @@ def aggregate_by(data: Series, index_var: str, period: str):
     agg_df.set_index(index_var, drop=True, inplace=True)
     return agg_df
 
-file_tag = 'drought_agg_yearly'
+file_tag = 'drought_agg_monthly'
 index_multi = 'date'
 target_multi = 'QV2M'
-data_multi = read_csv('../drought.forecasting_dataset.csv', index_col=index_multi, parse_dates=True, infer_datetime_format=True)
+data_multi = read_csv('../drought.forecasting_dataset.csv', index_col=index_multi, parse_dates=True, dayfirst=True)
 
 figure(figsize=(3*HEIGHT, HEIGHT))
-agg_multi_df = aggregate_by(data_multi, index_multi, 'Y')
-plot_series(agg_multi_df[target_multi], title='Yearly', x_label='timestamp', y_label='QV2M')
-plot_series(agg_multi_df['PRECTOT'])
+agg_multi_df = aggregate_by(data_multi, index_multi, 'M')
+#agg_multi_df.to_csv(f'../{file_tag}.csv', index=False)
+plot_series(agg_multi_df[target_multi], title='Monthly', x_label='timestamp', y_label='QV2M')
+#plot_series(agg_multi_df['PRECTOT'])
 xticks(rotation = 45)
 show()
 savefig(f'imagesD2Transformation/{file_tag}.png')
 
-df = agg_multi_df.drop(['PRECTOT','PS','T2M','T2MDEW','T2MWET','TS'], axis=1)
+'''df = agg_multi_df.drop(['PRECTOT','PS','T2M','T2MDEW','T2MWET','TS'], axis=1)
 
 def split_dataframe(data, trn_pct=0.70):
     trn_size = int(len(data) * trn_pct)
@@ -67,4 +68,4 @@ eval_results['Persistence'] = PREDICTION_MEASURES[measure](test.values, prd_tst)
 print(eval_results)
 
 plot_evaluation_results(train.values, prd_trn, test.values, prd_tst, f'imagesD2Transformation/{file_tag}_persistence_eval.png')
-plot_forecasting_series(train, test, prd_trn, prd_tst, f'imagesD2Transformation/{file_tag}_persistence_plots.png', x_label=index_multi, y_label=target_multi)
+plot_forecasting_series(train, test, prd_trn, prd_tst, f'imagesD2Transformation/{file_tag}_persistence_plots.png', x_label=index_multi, y_label=target_multi)'''
