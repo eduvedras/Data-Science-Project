@@ -5,7 +5,7 @@ from matplotlib.pyplot import figure, xticks, show, savefig
 import matplotlib.pyplot as plt
 from ts_functions import plot_series, HEIGHT
 
-data = read_csv('../drought.forecasting_dataset.csv', index_col='date', sep=',', decimal='.', parse_dates=True, infer_datetime_format=True)
+data = read_csv('../drought.forecasting_dataset.csv', index_col='date', sep=',', decimal='.', parse_dates=True, dayfirst=True)
 
 index = data.index.to_period('M')
 month_df = data.copy().groupby(index).mean()
