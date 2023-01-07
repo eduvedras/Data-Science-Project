@@ -7,10 +7,10 @@ from ts_functions import HEIGHT, split_dataframe, create_temporal_dataset
 from sklearn.base import RegressorMixin
 from ts_functions import PREDICTION_MEASURES, plot_evaluation_results, plot_forecasting_series
 
-file_tag = 'drought_diff_2'
+file_tag = 'drought_diff_1'
 index_multi = 'date'
 target_multi = 'QV2M'
-data_multi = read_csv('../drought.forecasting_dataset.csv', index_col=index_multi, parse_dates=True, dayfirst=True)
+data_multi = read_csv('../droughtDrop.csv', index_col=index_multi, parse_dates=True, dayfirst=True)
 
 def aggregate_by(data: Series, index_var: str, period: str):
     index = data.index.to_period(period)
@@ -19,26 +19,17 @@ def aggregate_by(data: Series, index_var: str, period: str):
     agg_df.set_index(index_var, drop=True, inplace=True)
     return agg_df
 
-agg_multi_df = aggregate_by(data_multi, index_multi, 'M')
+agg_multi_df = aggregate_by(data_multi, index_multi, 'D')
 
 WIN_SIZE = 50
 rolling_multi = agg_multi_df.rolling(window=WIN_SIZE)
 smooth_df_multi = rolling_multi.mean()
 
 diff_df_multi = smooth_df_multi.diff()
-diff_df_multi = diff_df_multi.diff()
-#diff_df_multi = data_multi
-figure(figsize=(3*HEIGHT, HEIGHT))
-plot_series(diff_df_multi[target_multi], title='Drought - Differentiation 2', x_label=index_multi, y_label='QV2M')
-#plot_series(diff_df_multi['PRECTOT'])
-xticks(rotation = 45)
-show()
-savefig(f'imagesD2Transformation/{file_tag}.png')
+#diff_df_multi = diff_df_multi.diff()
 
-df = diff_df_multi.drop(['PRECTOT','PS','T2M','T2MDEW','T2MWET','TS'], axis=1)
-df.drop(index=df.index[:WIN_SIZE], axis=0, inplace=True)
-df.drop(index=df.index[:2], axis=0, inplace=True)
-#df.to_csv(f'../{file_tag}.csv', index=False)
+diff_df_multi.drop(index=diff_df_multi.index[:WIN_SIZE], axis=0, inplace=True)
+diff_df_multi.drop(index=diff_df_multi.index[:2], axis=0, inplace=True)
 
 
 def split_dataframe(data, trn_pct=0.70):
@@ -48,7 +39,7 @@ def split_dataframe(data, trn_pct=0.70):
     test: DataFrame = df_cp.iloc[trn_size:]
     return train, test
 
-train, test = split_dataframe(df, trn_pct=0.75)
+train, test = split_dataframe(diff_df_multi, trn_pct=0.75)
 
 measure = 'R2'
 flag_pct = False

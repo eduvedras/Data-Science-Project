@@ -7,34 +7,10 @@ from ts_functions import HEIGHT, split_dataframe, create_temporal_dataset
 from sklearn.base import RegressorMixin
 from ts_functions import PREDICTION_MEASURES, plot_evaluation_results, plot_forecasting_series
 
-def aggregate_by(data: Series, index_var: str, period: str):
-    index = data.index.to_period(period)
-    agg_df = data.copy().groupby(index).mean()
-    agg_df[index_var] = index.drop_duplicates().to_timestamp()
-    agg_df.set_index(index_var, drop=True, inplace=True)
-    return agg_df
-
-file_tag = 'drought_smoothing10'
+file_tag = 'drought'
 index_multi = 'date'
 target_multi = 'QV2M'
 data_multi = read_csv('../droughtDrop.csv', index_col='date', sep=',', decimal='.', parse_dates=True, dayfirst=True)
-
-train, test = split_dataframe(data_multi, trn_pct=0.75)
-train = aggregate_by(train, index_multi, 'D')
-
-WIN_SIZE = 10
-rolling_multi = train.rolling(window=WIN_SIZE)
-smooth_df_multi = rolling_multi.mean()
-#figure(figsize=(3*HEIGHT, HEIGHT/2))
-#plot_series(smooth_df_multi[target_multi], title=f'Glucose - Smoothing (win_size={WIN_SIZE})', x_label=index_multi, y_label='glucose level')
-#xticks(rotation = 45)
-#show()
-#savefig(f'imagesD1Transformation/{file_tag}.png')
-
-train = smooth_df_multi
-train.drop(index=train.index[:WIN_SIZE], axis=0, inplace=True)
-#df.to_csv(f'../{file_tag}.csv', index=False)
-
 
 def split_dataframe(data, trn_pct=0.70):
     trn_size = int(len(data) * trn_pct)
@@ -43,13 +19,13 @@ def split_dataframe(data, trn_pct=0.70):
     test: DataFrame = df_cp.iloc[trn_size:]
     return train, test
 
-#train, test = split_dataframe(df, trn_pct=0.75)
-
 measure = 'R2'
 flag_pct = False
 eval_results = {}
 
-class PersistenceRegressor (RegressorMixin):
+train, test = split_dataframe(data_multi, trn_pct=0.75)
+
+'''class PersistenceRegressor (RegressorMixin):
     def __init__(self):
         super().__init__()
         self.last = 0
@@ -71,9 +47,9 @@ prd_tst = fr_mod.predict(test)
 eval_results['Persistence'] = PREDICTION_MEASURES[measure](test.values, prd_tst)
 print(eval_results)
 
-plot_evaluation_results(train.values, prd_trn, test.values, prd_tst, f'imagesD2Transformation/{file_tag}_persistence_eval.png')
-plot_forecasting_series(train, test, prd_trn, prd_tst, f'imagesD2Transformation/{file_tag}_persistence_plots.png', x_label=index_multi, y_label=target_multi)
-'''
+plot_evaluation_results(train.values, prd_trn, test.values, prd_tst, f'imagesD2Forecasting/{file_tag}_persistence_eval.png')
+plot_forecasting_series(train, test, prd_trn, prd_tst, f'imagesD2Forecasting/{file_tag}_persistence_plots.png', x_label=index_multi, y_label=target_multi)
+
 class SimpleAvgRegressor (RegressorMixin):
     def __init__(self):
         super().__init__()
@@ -94,11 +70,11 @@ prd_tst = fr_mod.predict(test)
 eval_results['SimpleAvg'] = PREDICTION_MEASURES[measure](test.values, prd_tst)
 print(eval_results)
 
-plot_evaluation_results(train.values, prd_trn, test.values, prd_tst, f'imagesD1Transformation/{file_tag}_simpleAvg_eval.png')
-plot_forecasting_series(train, test, prd_trn, prd_tst, f'imagesD1Transformation/{file_tag}_simpleAvg_plots.png', x_label=index_multi, y_label=target_multi)
+plot_evaluation_results(train.values, prd_trn, test.values, prd_tst, f'imagesD2Forecasting/{file_tag}_simpleAvg_eval.png')
+plot_forecasting_series(train, test, prd_trn, prd_tst, f'imagesD2Forecasting/{file_tag}_simpleAvg_plots.png', x_label=index_multi, y_label=target_multi)
 
 class RollingMeanRegressor (RegressorMixin):
-    def __init__(self, win: int = 5):
+    def __init__(self, win: int = 10):
         super().__init__()
         self.win_size = win
 
@@ -119,15 +95,15 @@ prd_tst = fr_mod.predict(test)
 eval_results['RollingMean'] = PREDICTION_MEASURES[measure](test.values, prd_tst)
 print(eval_results)
 
-plot_evaluation_results(train.values, prd_trn, test.values, prd_tst, f'imagesD1Transformation/{file_tag}_win=5_rollingMean_eval.png')
-plot_forecasting_series(train, test, prd_trn, prd_tst, f'imagesD1Transformation/{file_tag}_win=5_rollingMean_plots.png', x_label=index_multi, y_label=target_multi)
-'''
-'''
+plot_evaluation_results(train.values, prd_trn, test.values, prd_tst, f'imagesD2Forecasting/{file_tag}_win=10_rollingMean_eval.png')
+plot_forecasting_series(train, test, prd_trn, prd_tst, f'imagesD2Forecasting/{file_tag}_win=10_rollingMean_plots.png', x_label=index_multi, y_label=target_multi)
+
+
 from statsmodels.tsa.arima.model import ARIMA
 
-pred = ARIMA(train, order=(2, 0, 2))
-model = pred.fit(method_kwargs={'warn_convergence': False})
-model.plot_diagnostics(figsize=(2*HEIGHT, 2*HEIGHT))
+#pred = ARIMA(train, order=(2, 0, 2))
+#model = pred.fit(method_kwargs={'warn_convergence': False})
+#model.plot_diagnostics(figsize=(2*HEIGHT, 2*HEIGHT))
 
 from matplotlib.pyplot import subplots, show, savefig
 from ds_charts import multiple_line_chart
@@ -162,21 +138,21 @@ for der in range(len(d_values)):
         values[q] = yvalues
     multiple_line_chart(
         params, values, ax=axs[0, der], title=f'ARIMA d={d}', xlabel='p', ylabel=measure, percentage=flag_pct)
-savefig(f'imagesD1Arima/{file_tag}_ts_arima_study.png')
+savefig(f'imagesD2Arima/{file_tag}_ts_arima_study.png')
 show()
 print(f'Best results achieved with (p,d,q)=({best[0]}, {best[1]}, {best[2]}) ==> measure={last_best:.2f}')
-
+'''
 
 from statsmodels.tsa.arima.model import ARIMA
 from ts_functions import PREDICTION_MEASURES, plot_evaluation_results, plot_forecasting_series
 
-#md = ARIMA(train, order=(1, 2, 3))
-#md = md.fit(method_kwargs={'warn_convergence': False})
-prd_trn = best_model.predict(start=0, end=len(train)-1)
-prd_tst = best_model.forecast(steps=len(test))
-#prd_trn = md.predict(start=0, end=len(train)-1)
-#prd_tst = md.forecast(steps=len(test))
+md = ARIMA(train, order=(1, 2, 2))
+md = md.fit(method_kwargs={'warn_convergence': False})
+#prd_trn = best_model.predict(start=0, end=len(train)-1)
+#prd_tst = best_model.forecast(steps=len(test))
+prd_trn = md.predict(start=0, end=len(train)-1)
+prd_tst = md.forecast(steps=len(test))
 print(f'\t{measure}={PREDICTION_MEASURES[measure](test, prd_tst)}')
 
-plot_evaluation_results(train.values, prd_trn, test.values, prd_tst, f'imagesD1Arima/{file_tag}_arima_eval.png')
-plot_forecasting_series(train, test, prd_trn, prd_tst, f'imagesD1Arima/{file_tag}_arima_plots.png', x_label= str(index_multi), y_label=str(target_multi))'''
+plot_evaluation_results(train.values, prd_trn, test.values, prd_tst, f'imagesD2Arima/{file_tag}_arima_1_2_2_eval.png')
+plot_forecasting_series(train, test, prd_trn, prd_tst, f'imagesD2Arima/{file_tag}_arima_1_2_2_plots.png', x_label= str(index_multi), y_label=str(target_multi))

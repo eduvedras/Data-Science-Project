@@ -7,7 +7,7 @@ from ts_functions import plot_series, HEIGHT
 
 data = read_csv('../drought.forecasting_dataset.csv', index_col='date', sep=',', decimal='.', parse_dates=True, dayfirst=True)
 
-index = data.index.to_period('M')
+index = data.index.to_period('D')
 month_df = data.copy().groupby(index).mean()
 month_df['timestamp'] = index.drop_duplicates().to_timestamp()
 month_df.set_index('timestamp', drop=True, inplace=True)
