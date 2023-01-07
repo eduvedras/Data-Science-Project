@@ -17,19 +17,21 @@ def aggregate_by(data: Series, index_var: str, period: str):
     agg_df.set_index(index_var, drop=True, inplace=True)
     return agg_df
 
-file_tag = 'glucose_agg_hourly'
+file_tag = 'glucose_agg_weekly'
 index_multi = 'Date'
 target_multi = 'Glucose'
 data_multi = read_csv('../glucose.csv', index_col='Date', sep=',', decimal='.', parse_dates=True, dayfirst=True)
 
-figure(figsize=(3*HEIGHT, HEIGHT))
-agg_multi_df = aggregate_by(data_multi, index_multi, 'H')
-plot_series(agg_multi_df[target_multi], title='Hourly', x_label='timestamp', y_label='glucose level')
+train, test = split_dataframe(data_multi, trn_pct=0.75)
+
+#figure(figsize=(3*HEIGHT, HEIGHT))
+train = aggregate_by(train, index_multi, 'W')
+'''plot_series(agg_multi_df[target_multi], title='Hourly', x_label='timestamp', y_label='glucose level')
 xticks(rotation = 45)
 show()
-savefig(f'imagesD1Transformation/{file_tag}.png')
+savefig(f'imagesD1Transformation/{file_tag}.png')'''
 
-df = agg_multi_df
+#df = data_multi
 
 def split_dataframe(data, trn_pct=0.70):
     trn_size = int(len(data) * trn_pct)
@@ -38,7 +40,6 @@ def split_dataframe(data, trn_pct=0.70):
     test: DataFrame = df_cp.iloc[trn_size:]
     return train, test
 
-train, test = split_dataframe(df, trn_pct=0.75)
 
 measure = 'R2'
 flag_pct = False

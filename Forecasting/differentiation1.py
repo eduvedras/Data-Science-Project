@@ -14,22 +14,22 @@ def aggregate_by(data: Series, index_var: str, period: str):
     agg_df.set_index(index_var, drop=True, inplace=True)
     return agg_df
 
-file_tag = 'glucose_diff_Original'
+file_tag = 'glucose_diff_2'
 index_multi = 'Date'
 target_multi = 'Glucose'
 data_multi = read_csv('../glucose.csv', index_col='Date', sep=',', decimal='.', parse_dates=True, dayfirst=True)
-agg_multi_df = aggregate_by(data_multi, index_multi, 'D')
+agg_multi_df = aggregate_by(data_multi, index_multi, 'H')
 
-WIN_SIZE = 13
+WIN_SIZE = 50
 rolling_multi = agg_multi_df.rolling(window=WIN_SIZE)
 smooth_df_multi = rolling_multi.mean()
 
 df = smooth_df_multi
 df.drop(index=df.index[:WIN_SIZE], axis=0, inplace=True)
 
-#diff_df_multi = df.diff()
-#diff_df_multi = diff_df_multi.diff()
-diff_df_multi = df
+diff_df_multi = df.diff()
+diff_df_multi = diff_df_multi.diff()
+#diff_df_multi = df
 figure(figsize=(3*HEIGHT, HEIGHT))
 plot_series(diff_df_multi[target_multi], title='Glucose - Differentiation Original', x_label=index_multi, y_label='glucose level')
 xticks(rotation = 45)
@@ -37,7 +37,7 @@ show()
 savefig(f'imagesD1Transformation/{file_tag}.png')
 
 df = diff_df_multi
-#df.drop(index=df.index[:2], axis=0, inplace=True)
+df.drop(index=df.index[:2], axis=0, inplace=True)
 #df.to_csv(f'../{file_tag}.csv', index=False)
 
 

@@ -43,31 +43,12 @@ class DS_LSTM(Module):
         # Predict the target variable for the input data
         return self(data).detach().numpy()
     
-def aggregate_by(data: Series, index_var: str, period: str):
-    index = data.index.to_period(period)
-    agg_df = data.copy().groupby(index).mean()
-    agg_df[index_var] = index.drop_duplicates().to_timestamp()
-    agg_df.set_index(index_var, drop=True, inplace=True)
-    return agg_df
-    
 from pandas import read_csv, DataFrame
 from torch import manual_seed, Tensor
 from torch.autograd import Variable
 from ts_functions import split_dataframe, sliding_window
 from sklearn.preprocessing import MinMaxScaler
-'''
-file_tag = 'glucose_best'
-index = 'Date'
-target = 'Glucose'
-data = read_csv('../glucose.csv', index_col='Date', sep=',', decimal='.', parse_dates=True, dayfirst=True)
-agg_multi_df = aggregate_by(data, index, 'D')
 
-WIN_SIZE = 13
-rolling_multi = agg_multi_df.rolling(window=WIN_SIZE)
-smooth_df = rolling_multi.mean()
-
-
-smooth_df.drop(index=data.index[:WIN_SIZE], axis=0, inplace=True)'''
 
 target = 'Glucose'
 index_col='Date'
@@ -75,13 +56,8 @@ index_col='Date'
 file_tag = 'glucose'
 data = read_csv('../glucose.csv', index_col='Date', sep=',', decimal='.', parse_dates=True, dayfirst=True)
 nr_features = len(data.columns)
-agg_multi_df = aggregate_by(data, index_col, 'D')
-WIN_SIZE = 13
-rolling_multi = agg_multi_df.rolling(window=WIN_SIZE)
-smooth_df = rolling_multi.mean()
-smooth_df.drop(index=smooth_df.index[:WIN_SIZE], axis=0, inplace=True)
 sc = MinMaxScaler()
-data = DataFrame(sc.fit_transform(smooth_df), index=smooth_df.index, columns=smooth_df.columns)
+data = DataFrame(sc.fit_transform(data), index=data.index, columns=data.columns)
 manual_seed(1)
 train, test = split_dataframe(data, trn_pct=.70)
 
@@ -163,27 +139,27 @@ for s in range(len(sequence_size)):
 print(f'Best results with seq length={best[0]} hidden={best[1]} episodes={best[2]} ==> measure={last_best:.2f}')
 savefig(f'imagesD1LSTM/{file_tag}_lstm_study.png')
 show()
-
-trnX, trnY = sliding_window(train, seq_length = best[0])
+SEQ = 60
+trnX, trnY = sliding_window(train, seq_length = SEQ)
 trainY = DataFrame(trnY)
-trainY.index = train.index[best[0]+1:]
+trainY.index = train.index[SEQ+1:]
 trainY.columns = [target]
 trnX, trnY  = Variable(Tensor(trnX)), Variable(Tensor(trnY))
-#best_model = DS_LSTM(input_size=nr_features, hidden_size=32, learning_rate=learning_rate)
+#best_model = DS_LSTM(input_size=nr_features, hidden_size=16, learning_rate=learning_rate)
 #best_model.fit(trnX, trnY)
 prd_trn = best_model.predict(trnX)
 prd_trn = DataFrame(prd_trn)
-prd_trn.index=train.index[best[0]+1:]
+prd_trn.index=train.index[SEQ+1:]
 prd_trn.columns = [target]
 
-tstX, tstY = sliding_window(test, seq_length = best[0])
+tstX, tstY = sliding_window(test, seq_length = SEQ)
 testY = DataFrame(tstY)
-testY.index = test.index[best[0]+1:]
+testY.index = test.index[SEQ+1:]
 testY.columns = [target]
 tstX, tstY  = Variable(Tensor(tstX)), Variable(Tensor(tstY))
 prd_tst = best_model.predict(tstX)
 prd_tst = DataFrame(prd_tst)
-prd_tst.index=test.index[best[0]+1:]
+prd_tst.index=test.index[SEQ+1:]
 prd_tst.columns = [target]
 
 plot_evaluation_results(trnY.data.numpy(), prd_trn, tstY.data.numpy(), prd_tst, f'imagesD1LSTM/{file_tag}_lstm_eval.png')

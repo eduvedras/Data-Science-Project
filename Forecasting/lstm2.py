@@ -42,42 +42,54 @@ class DS_LSTM(Module):
     def predict(self, data):
         # Predict the target variable for the input data
         return self(data).detach().numpy()
-
-
-
-from pandas import read_csv, DataFrame, Series
+    
+from pandas import read_csv, DataFrame
 from torch import manual_seed, Tensor
 from torch.autograd import Variable
 from ts_functions import split_dataframe, sliding_window
 from sklearn.preprocessing import MinMaxScaler
-from ds_charts import HEIGHT, multiple_line_chart
-from matplotlib.pyplot import subplots, show, savefig
-from ts_functions import PREDICTION_MEASURES, plot_evaluation_results, plot_forecasting_series, sliding_window
+
 
 target = 'QV2M'
 index_col='date'
 
-file_tag = 'drought_lstm'
-data = read_csv('../droughtDrop.csv', index_col=index_col, sep=',', decimal='.', parse_dates=True, infer_datetime_format=True)
+file_tag = 'drought'
+data = read_csv('../droughtDrop.csv', index_col='date', sep=',', decimal='.', parse_dates=True, dayfirst=True)
 nr_features = len(data.columns)
-
-def aggregate_by(data: Series, index_var: str, period: str):
-    index = data.index.to_period(period)
-    agg_df = data.copy().groupby(index).mean()
-    agg_df[index_var] = index.drop_duplicates().to_timestamp()
-    agg_df.set_index(index_var, drop=True, inplace=True)
-    return agg_df
-
-agg_multi_df = aggregate_by(data, index_col, 'M')
-
-WIN_SIZE = 50
-rolling_multi = agg_multi_df.rolling(window=WIN_SIZE)
-smooth_df = rolling_multi.mean()
-smooth_df.drop(index=smooth_df.index[:WIN_SIZE], axis=0, inplace=True)
 sc = MinMaxScaler()
-data = DataFrame(sc.fit_transform(smooth_df), index=smooth_df.index, columns=smooth_df.columns)
+data = DataFrame(sc.fit_transform(data), index=data.index, columns=data.columns)
 manual_seed(1)
 train, test = split_dataframe(data, trn_pct=.70)
+
+seq_length = 4
+num_epochs = 2000
+
+trnX, trnY = sliding_window(train, seq_length = seq_length)
+trnX, trnY  = Variable(Tensor(trnX)), Variable(Tensor(trnY))
+tstX, tstY = sliding_window(test, seq_length = seq_length)
+tstX, tstY  = Variable(Tensor(tstX)), Variable(Tensor(tstY))
+
+my_lstm = DS_LSTM(input_size=1, hidden_size=8, learning_rate=0.001)
+
+for epoch in range(num_epochs+1):
+    loss = my_lstm.fit(trnX, trnY)
+    if epoch % 500 == 0:
+        print("Epoch: %d, loss: %1.5f" % (epoch, loss))
+        
+from sklearn.metrics import r2_score
+
+prd_trn = my_lstm(trnX)
+prd_tst = my_lstm(tstX)
+
+print('TRAIN R2=', r2_score(trnY.data.numpy(), prd_trn.data.numpy()))
+print('TEST R2=', r2_score(tstY.data.numpy(), prd_tst.data.numpy()))
+
+
+from torch import manual_seed, Tensor
+from torch.autograd import Variable
+from ds_charts import HEIGHT, multiple_line_chart
+from matplotlib.pyplot import subplots, show, savefig
+from ts_functions import PREDICTION_MEASURES, plot_evaluation_results, plot_forecasting_series, sliding_window
 
 best = ('',  0, 0.0)
 last_best = -100
@@ -95,7 +107,7 @@ for el in max_iter[1:]:
     episode_values.append(episode_values[-1]+el)
 
 nCols = len(sequence_size)
-_, axs = subplots(1, nCols, figsize=(nCols*HEIGHT, HEIGHT), squeeze=False)
+'''_, axs = subplots(1, nCols, figsize=(nCols*HEIGHT, HEIGHT), squeeze=False)
 values = {}
 for s in range(len(sequence_size)):
     length = sequence_size[s]
@@ -125,5 +137,33 @@ for s in range(len(sequence_size)):
     multiple_line_chart(
         episode_values, values, ax=axs[0, s], title=f'LSTM seq length={length}', xlabel='nr episodes', ylabel=measure, percentage=flag_pct)
 print(f'Best results with seq length={best[0]} hidden={best[1]} episodes={best[2]} ==> measure={last_best:.2f}')
-savefig(f'imagesD2ModelEval/{file_tag}_lstm_study.png')
+savefig(f'imagesD2LSTM/{file_tag}_lstm_study.png')
+show()'''
+
+SEQ = 100
+trnX, trnY = sliding_window(train, seq_length = SEQ)
+trainY = DataFrame(trnY)
+trainY.index = train.index[SEQ+1:]
+trainY.columns = [target]
+trnX, trnY  = Variable(Tensor(trnX)), Variable(Tensor(trnY))
+best_model = DS_LSTM(input_size=nr_features, hidden_size=32, learning_rate=learning_rate)
+best_model.fit(trnX, trnY)
+prd_trn = best_model.predict(trnX)
+prd_trn = DataFrame(prd_trn)
+prd_trn.index=train.index[SEQ+1:]
+prd_trn.columns = [target]
+
+tstX, tstY = sliding_window(test, seq_length = SEQ)
+testY = DataFrame(tstY)
+testY.index = test.index[SEQ+1:]
+testY.columns = [target]
+tstX, tstY  = Variable(Tensor(tstX)), Variable(Tensor(tstY))
+prd_tst = best_model.predict(tstX)
+prd_tst = DataFrame(prd_tst)
+prd_tst.index=test.index[SEQ+1:]
+prd_tst.columns = [target]
+
+plot_evaluation_results(trnY.data.numpy(), prd_trn, tstY.data.numpy(), prd_tst, f'imagesD2LSTM/{file_tag}_lstm_100_32_?_eval.png')
+show()
+plot_forecasting_series(trainY, testY, prd_trn.values, prd_tst.values, f'imagesD2LSTM/{file_tag}_lstm_100_32_?_plots.png', x_label=index_col, y_label=target)
 show()
